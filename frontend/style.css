@@ -1,0 +1,211 @@
+/* --- General & Root Variables --- */
+:root {
+    --bg-color: #1a1a2e;
+    --primary-color: #16213e;
+    --secondary-color: #0f3460;
+    --accent-color: #e94560;
+    --text-color: #e0e0e0;
+    --text-muted: #a0a0a0;
+    --border-radius: 8px;
+    --gradient: linear-gradient(90deg, #53a2be, #e94560);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+/* --- Main Container & Header --- */
+.container {
+    width: 100%;
+    max-width: 700px;
+    background-color: var(--primary-color);
+    padding: 30px 40px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--secondary-color);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--secondary-color);
+    padding-bottom: 20px;
+}
+
+h1 {
+    color: #fff;
+    margin: 0;
+}
+
+.header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* --- Form & Input Styling --- */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+label i {
+    margin-right: 8px;
+    width: 15px; /* Ensures alignment */
+    text-align: center;
+    color: var(--accent-color);
+}
+
+input, select, textarea {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid #2a4a75;
+    border-radius: var(--border-radius);
+    padding: 12px 15px;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.2s ease-in-out;
+}
+
+input::placeholder, textarea::placeholder {
+    color: #6a7891;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(233, 69, 96, 0.3);
+}
+
+/* --- Buttons --- */
+button {
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#generate-btn {
+    background-image: var(--gradient);
+    background-size: 200% 100%;
+    margin-top: 10px;
+}
+
+#generate-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+    background-position: right center;
+}
+
+/* --- Result & Loading Section --- */
+#result-container {
+    margin-top: 30px;
+    background-color: var(--bg-color);
+    padding: 25px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--secondary-color);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+#result-container:not(.hidden) {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--secondary-color);
+}
+
+.result-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+#copy-btn {
+    background-color: var(--secondary-color);
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    font-weight: 400;
+}
+
+#copy-btn:hover {
+    background-color: #2a4a75;
+}
+
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+}
+
+#loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    color: var(--text-muted);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--secondary-color);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.hidden {
+    display: none;
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Email Generator ✨</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="container">
+        <div class="header">
+            <h1>AI Email Generator</h1>
+            <p>Craft the perfect email in seconds. Just fill out the details below.</p>
+        </div>
+
+        <form id="email-form">
+            <div class="input-group">
+                <label for="goal"><i class="fa-solid fa-bullseye"></i> Goal of the email?</label>
+                <input type="text" id="goal" name="goal" placeholder="e.g., Ask for a project extension" required>
+            </div>
+
+            <div class="input-group">
+                <label for="recipient"><i class="fa-solid fa-user"></i> Who is the recipient?</label>
+                <input type="text" id="recipient" name="recipient" placeholder="e.g., My Professor, Dr. Smith" required>
+            </div>
+
+            <div class="input-group">
+                <label for="tone"><i class="fa-solid fa-microphone-lines"></i> Select a tone:</label>
+                <select id="tone" name="tone">
+                    <option value="Formal">Formal</option>
+                    <option value="Casual">Casual</option>
+                    <option value="Persuasive">Persuasive</option>
+                    <option value="Friendly">Friendly</option>
+                    <option value="Direct">Direct</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="points"><i class="fa-solid fa-list-check"></i> What key points must be included?</label>
+                <textarea id="points" name="points" rows="4" placeholder="e.g.,&#10;- The current deadline is this Friday.&#10;- I need a 3-day extension.&#10;- Reason: Unexpected workload from another course." required></textarea>
+            </div>
+
+            <button type="submit" id="generate-btn">
+                <i class="fa-solid fa-paper-plane"></i> Generate Email
+            </button>
+        </form>
+
+        <section id="result-container" class="hidden">
+            <div class="result-header">
+                <h2>Generated Email</h2>
+                <button id="copy-btn" title="Copy to clipboard">
+                    <i class="fa-regular fa-copy"></i> Copy
+                </button>
+            </div>
+            <div id="loading-indicator" class="hidden">
+                <div class="spinner"></div>
+                <p>Generating... please wait.</p>
+            </div>
+            <pre id="result-text"></pre>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
