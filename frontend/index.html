@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Email Generator ✨</title>
+    <title>AI Content Generator ✨</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -13,11 +13,22 @@
 <body>
     <main class="container">
         <div class="header">
-            <h1>AI Email Generator</h1>
-            <p>Craft the perfect email in seconds. Just fill out the details below.</p>
+            <h1>AI Content Generator</h1>
+            <p>Create emails, essays, stories, or speeches based on your inputs. Theme preserved.</p>
         </div>
 
-        <form id="email-form">
+        <form id="content-form">
+            <div class="input-group">
+                <label for="type"><i class="fa-solid fa-layer-group"></i> What do you want to generate?</label>
+                <select id="type" name="type">
+                    <option value="email">Email</option>
+                    <option value="essay">Essay</option>
+                    <option value="story">Story</option>
+                    <option value="speech">Speech</option>
+                </select>
+            </div>
+
+            <!-- Email Fields -->
             <div class="input-group">
                 <label for="goal"><i class="fa-solid fa-bullseye"></i> Goal of the email?</label>
                 <input type="text" id="goal" name="goal" placeholder="e.g., Ask for a project extension" required>
@@ -44,14 +55,62 @@
                 <textarea id="points" name="points" rows="4" placeholder="e.g.,&#10;- The current deadline is this Friday.&#10;- I need a 3-day extension.&#10;- Reason: Unexpected workload from another course." required></textarea>
             </div>
 
+            <!-- Essay Fields -->
+            <div id="essay-fields" class="hidden">
+                <div class="input-group">
+                    <label for="topic"><i class="fa-solid fa-book"></i> Essay topic</label>
+                    <input type="text" id="topic" name="topic" placeholder="e.g., The Impact of Renewable Energy">
+                </div>
+                <div class="input-group">
+                    <label for="essay-length"><i class="fa-solid fa-ruler-horizontal"></i> Target length (words)</label>
+                    <input type="number" id="essay-length" name="essay-length" placeholder="e.g., 600">
+                </div>
+            </div>
+
+            <!-- Story Fields -->
+            <div id="story-fields" class="hidden">
+                <div class="input-group">
+                    <label for="genre"><i class="fa-solid fa-masks-theater"></i> Story genre</label>
+                    <input type="text" id="genre" name="genre" placeholder="e.g., Sci-Fi, Mystery">
+                </div>
+                <div class="input-group">
+                    <label for="setting"><i class="fa-solid fa-map-location-dot"></i> Setting</label>
+                    <input type="text" id="setting" name="setting" placeholder="e.g., Mars Colony, 2120">
+                </div>
+                <div class="input-group">
+                    <label for="characters"><i class="fa-solid fa-users"></i> Main characters</label>
+                    <input type="text" id="characters" name="characters" placeholder="e.g., A scientist and an AI rover">
+                </div>
+                <div class="input-group">
+                    <label for="story-length"><i class="fa-solid fa-ruler-horizontal"></i> Target length (words)</label>
+                    <input type="number" id="story-length" name="story-length" placeholder="e.g., 800">
+                </div>
+            </div>
+
+            <!-- Speech Fields -->
+            <div id="speech-fields" class="hidden">
+                <div class="input-group">
+                    <label for="occasion"><i class="fa-solid fa-calendar-day"></i> Occasion</label>
+                    <input type="text" id="occasion" name="occasion" placeholder="e.g., Graduation Ceremony">
+                </div>
+                <div class="input-group">
+                    <label for="audience"><i class="fa-solid fa-people-group"></i> Audience</label>
+                    <input type="text" id="audience" name="audience" placeholder="e.g., Graduates and families">
+                </div>
+                <div class="input-group">
+                    <label for="speech-duration"><i class="fa-solid fa-clock"></i> Target duration (minutes)</label>
+                    <input type="number" id="speech-duration" name="speech-duration" placeholder="e.g., 5">
+                </div>
+            </div>
+
             <button type="submit" id="generate-btn">
-                <i class="fa-solid fa-paper-plane"></i> Generate Email
+                <i class="fa-solid fa-paper-plane"></i> Generate
             </button>
         </form>
 
         <section id="result-container" class="hidden">
             <div class="result-header">
-                <h2>Generated Email</h2>
+                <h2>Generated Content</h2>
                 <button id="copy-btn" title="Copy to clipboard">
                     <i class="fa-regular fa-copy"></i> Copy
                 </button>

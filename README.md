@@ -1,4 +1,4 @@
-AI Email Generator (Flask + Hugging Face)
+AI Content Generator (Flask + Hugging Face/Groq)
 
 Backend setup
 1) Open a terminal and go to `email-generator/backend`.
@@ -19,14 +19,16 @@ Backend setup
      - `GROQ_MODEL_ID=llama3-8b-8192` (default)
 5) Run the server: `python main.py`
    - App: `http://127.0.0.1:5000` (serves the frontend)
-   - API: `http://127.0.0.1:5000/api/generate-email`
+   - APIs:
+     - `POST /api/generate` (new, generic) → body: `{ "type": "email|essay|story|speech", ... }`
+     - `POST /api/generate-email` (legacy) → body: `{ goal, recipient, tone, points }`
 
 Frontend
 Open `http://127.0.0.1:5000` in your browser. The Flask server serves the frontend and the API on the same origin.
 
 Notes
 - If you see CORS errors, ensure the backend is running and reachable.
-- You can switch models by editing `MODEL_API_URL` in `backend/main.py`.
+- You can switch models by setting `HF_MODEL_ID` or `PROVIDER=groq` in `.env`.
  - Or set `HF_MODEL_ID` in `.env` (e.g., `mistralai/Mistral-7B-Instruct-v0.2` if you have access).
  - If you get 404 from Hugging Face, the model is misspelled or gated; choose another or request access.
  - The backend will automatically try fallback models from `HF_FALLBACK_MODELS` if the primary fails.
