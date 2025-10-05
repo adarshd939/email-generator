@@ -2,11 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('content-form');
     const resultContainer = document.getElementById('result-container');
     const resultText = document.getElementById('result-text');
-    const loadingIndicator = document.getElementById('loading-indicator');
     const generateBtn = document.getElementById('generate-btn');
     const copyBtn = document.getElementById('copy-btn');
     const typeSelect = document.getElementById('type');
 
+    const emailFields = document.getElementById('email-fields');
     const essayFields = document.getElementById('essay-fields');
     const storyFields = document.getElementById('story-fields');
     const speechFields = document.getElementById('speech-fields');
@@ -14,10 +14,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Toggle dynamic fields by type ---
     function updateFieldVisibility() {
         const t = typeSelect.value;
-        // Default: email shows base fields (goal, recipient, tone, points)
+        // Show/hide content-specific fields
+        emailFields.classList.toggle('hidden', t !== 'email');
         essayFields.classList.toggle('hidden', t !== 'essay');
         storyFields.classList.toggle('hidden', t !== 'story');
         speechFields.classList.toggle('hidden', t !== 'speech');
+        
+        // Update required attributes based on content type
+        updateRequiredFields(t);
+    }
+
+    // --- Update required field attributes ---
+    function updateRequiredFields(contentType) {
+        // Reset all fields to not required first
+        const allFields = ['goal', 'recipient', 'topic', 'genre', 'setting', 'characters', 'occasion', 'audience'];
+        allFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.removeAttribute('required');
+            }
+        });
+
+        // Set required fields based on content type
+        if (contentType === 'email') {
+            document.getElementById('goal').setAttribute('required', '');
+            document.getElementById('recipient').setAttribute('required', '');
+        } else if (contentType === 'essay') {
+            document.getElementById('topic').setAttribute('required', '');
+        } else if (contentType === 'story') {
+            document.getElementById('genre').setAttribute('required', '');
+            document.getElementById('setting').setAttribute('required', '');
+            document.getElementById('characters').setAttribute('required', '');
+        } else if (contentType === 'speech') {
+            document.getElementById('occasion').setAttribute('required', '');
+            document.getElementById('audience').setAttribute('required', '');
+        }
     }
     typeSelect.addEventListener('change', updateFieldVisibility);
     updateFieldVisibility();
@@ -26,33 +57,71 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        // 1. Get form values
+        // 1. Get form values and build payload
         const type = document.getElementById('type').value;
         const tone = document.getElementById('tone').value;
         const points = document.getElementById('points').value;
 
-        // Base payload and per-type fields
-        const payload = { type, tone, points };
+        // Validate required common fields
+        if (!type || !tone || !points.trim()) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
+        // Base payload with common fields
+        const payload = { 
+            type, 
+            tone, 
+            points: points.trim() 
+        };
+
+        // Add type-specific fields with proper validation
         if (type === 'email') {
-            payload.goal = document.getElementById('goal').value;
-            payload.recipient = document.getElementById('recipient').value;
+            const goal = document.getElementById('goal').value.trim();
+            const recipient = document.getElementById('recipient').value.trim();
+            if (!goal || !recipient) {
+                alert('Please fill in the email goal and recipient.');
+                return;
+            }
+            payload.goal = goal;
+            payload.recipient = recipient;
         } else if (type === 'essay') {
-            payload.topic = document.getElementById('topic').value;
-            payload.length_words = document.getElementById('essay-length').value;
+            const topic = document.getElementById('topic').value.trim();
+            if (!topic) {
+                alert('Please enter an essay topic.');
+                return;
+            }
+            payload.topic = topic;
+            const length = document.getElementById('essay-length').value;
+            if (length) payload.length_words = parseInt(length);
         } else if (type === 'story') {
-            payload.genre = document.getElementById('genre').value;
-            payload.setting = document.getElementById('setting').value;
-            payload.characters = document.getElementById('characters').value;
-            payload.length_words = document.getElementById('story-length').value;
+            const genre = document.getElementById('genre').value.trim();
+            const setting = document.getElementById('setting').value.trim();
+            const characters = document.getElementById('characters').value.trim();
+            if (!genre || !setting || !characters) {
+                alert('Please fill in the story genre, setting, and characters.');
+                return;
+            }
+            payload.genre = genre;
+            payload.setting = setting;
+            payload.characters = characters;
+            const length = document.getElementById('story-length').value;
+            if (length) payload.length_words = parseInt(length);
         } else if (type === 'speech') {
-            payload.occasion = document.getElementById('occasion').value;
-            payload.audience = document.getElementById('audience').value;
-            payload.duration_minutes = document.getElementById('speech-duration').value;
+            const occasion = document.getElementById('occasion').value.trim();
+            const audience = document.getElementById('audience').value.trim();
+            if (!occasion || !audience) {
+                alert('Please fill in the speech occasion and audience.');
+                return;
+            }
+            payload.occasion = occasion;
+            payload.audience = audience;
+            const duration = document.getElementById('speech-duration').value;
+            if (duration) payload.duration_minutes = parseInt(duration);
         }
 
         // 2. Update UI for loading state
         resultContainer.classList.remove('hidden');
-        loadingIndicator.classList.remove('hidden');
         resultText.textContent = '';
         generateBtn.disabled = true;
         generateBtn.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> Generating...';
@@ -95,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
             resultText.style.color = '#e94560'; // Style error text
         } finally {
             // 5. Reset UI after completion
-            loadingIndicator.classList.add('hidden');
             generateBtn.disabled = false;
             generateBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Generate';
         }

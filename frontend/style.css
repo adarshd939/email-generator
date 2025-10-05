@@ -182,30 +182,68 @@ pre {
     color: var(--text-muted);
 }
 
-#loading-indicator {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    padding: 20px;
-    color: var(--text-muted);
-}
-
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid var(--secondary-color);
-    border-top-color: var(--accent-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
 
 .hidden {
     display: none;
+}
+
+/* --- Section Dividers --- */
+.section-divider {
+    margin: 25px 0 20px 0;
+    padding: 15px 0 10px 0;
+    border-top: 2px solid var(--secondary-color);
+    border-bottom: 1px solid var(--secondary-color);
+}
+
+.section-divider h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--accent-color);
+    font-weight: 500;
+}
+
+.section-divider h3 i {
+    margin-right: 10px;
+    color: var(--accent-color);
+}
+
+/* --- Required Field Indicators --- */
+.required {
+    color: var(--accent-color);
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+/* --- Form Validation Styles --- */
+input:invalid, select:invalid, textarea:invalid {
+    border-color: var(--accent-color);
+}
+
+input:valid, select:valid, textarea:valid {
+    border-color: #4CAF50;
+}
+
+/* --- Enhanced Form Layout --- */
+.input-group label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* --- Better Visual Hierarchy --- */
+form {
+    position: relative;
+}
+
+#email-fields, #essay-fields, #story-fields, #speech-fields {
+    transition: all 0.3s ease-in-out;
+}
+
+#email-fields:not(.hidden), #essay-fields:not(.hidden), 
+#story-fields:not(.hidden), #speech-fields:not(.hidden) {
+    background-color: rgba(233, 69, 96, 0.05);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(233, 69, 96, 0.2);
+    margin: 15px 0;
 }

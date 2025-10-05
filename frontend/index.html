@@ -28,20 +28,11 @@
                 </select>
             </div>
 
-            <!-- Email Fields -->
-            <div class="input-group">
-                <label for="goal"><i class="fa-solid fa-bullseye"></i> Goal of the email?</label>
-                <input type="text" id="goal" name="goal" placeholder="e.g., Ask for a project extension" required>
-            </div>
-
-            <div class="input-group">
-                <label for="recipient"><i class="fa-solid fa-user"></i> Who is the recipient?</label>
-                <input type="text" id="recipient" name="recipient" placeholder="e.g., My Professor, Dr. Smith" required>
-            </div>
-
+            <!-- Common Fields -->
             <div class="input-group">
                 <label for="tone"><i class="fa-solid fa-microphone-lines"></i> Select a tone:</label>
-                <select id="tone" name="tone">
+                <select id="tone" name="tone" required>
+                    <option value="">Choose a tone...</option>
                     <option value="Formal">Formal</option>
                     <option value="Casual">Casual</option>
                     <option value="Persuasive">Persuasive</option>
@@ -51,55 +42,79 @@
             </div>
 
             <div class="input-group">
-                <label for="points"><i class="fa-solid fa-list-check"></i> What key points must be included?</label>
-                <textarea id="points" name="points" rows="4" placeholder="e.g.,&#10;- The current deadline is this Friday.&#10;- I need a 3-day extension.&#10;- Reason: Unexpected workload from another course." required></textarea>
+                <label for="points"><i class="fa-solid fa-list-check"></i> Key points/content to include:</label>
+                <textarea id="points" name="points" rows="4" placeholder="Enter the main points, ideas, or content you want to include..." required></textarea>
+            </div>
+
+            <!-- Email Fields -->
+            <div id="email-fields">
+                <div class="section-divider">
+                    <h3><i class="fa-solid fa-envelope"></i> Email Details</h3>
+                </div>
+                <div class="input-group">
+                    <label for="goal"><i class="fa-solid fa-bullseye"></i> Goal of the email <span class="required">*</span></label>
+                    <input type="text" id="goal" name="goal" placeholder="e.g., Ask for a project extension" required>
+                </div>
+                <div class="input-group">
+                    <label for="recipient"><i class="fa-solid fa-user"></i> Who is the recipient? <span class="required">*</span></label>
+                    <input type="text" id="recipient" name="recipient" placeholder="e.g., My Professor, Dr. Smith" required>
+                </div>
             </div>
 
             <!-- Essay Fields -->
             <div id="essay-fields" class="hidden">
+                <div class="section-divider">
+                    <h3><i class="fa-solid fa-book"></i> Essay Details</h3>
+                </div>
                 <div class="input-group">
-                    <label for="topic"><i class="fa-solid fa-book"></i> Essay topic</label>
-                    <input type="text" id="topic" name="topic" placeholder="e.g., The Impact of Renewable Energy">
+                    <label for="topic"><i class="fa-solid fa-book"></i> Essay topic <span class="required">*</span></label>
+                    <input type="text" id="topic" name="topic" placeholder="e.g., The Impact of Renewable Energy" required>
                 </div>
                 <div class="input-group">
                     <label for="essay-length"><i class="fa-solid fa-ruler-horizontal"></i> Target length (words)</label>
-                    <input type="number" id="essay-length" name="essay-length" placeholder="e.g., 600">
+                    <input type="number" id="essay-length" name="essay-length" placeholder="e.g., 600" min="100" max="5000">
                 </div>
             </div>
 
             <!-- Story Fields -->
             <div id="story-fields" class="hidden">
-                <div class="input-group">
-                    <label for="genre"><i class="fa-solid fa-masks-theater"></i> Story genre</label>
-                    <input type="text" id="genre" name="genre" placeholder="e.g., Sci-Fi, Mystery">
+                <div class="section-divider">
+                    <h3><i class="fa-solid fa-masks-theater"></i> Story Details</h3>
                 </div>
                 <div class="input-group">
-                    <label for="setting"><i class="fa-solid fa-map-location-dot"></i> Setting</label>
-                    <input type="text" id="setting" name="setting" placeholder="e.g., Mars Colony, 2120">
+                    <label for="genre"><i class="fa-solid fa-masks-theater"></i> Story genre <span class="required">*</span></label>
+                    <input type="text" id="genre" name="genre" placeholder="e.g., Sci-Fi, Mystery, Romance" required>
                 </div>
                 <div class="input-group">
-                    <label for="characters"><i class="fa-solid fa-users"></i> Main characters</label>
-                    <input type="text" id="characters" name="characters" placeholder="e.g., A scientist and an AI rover">
+                    <label for="setting"><i class="fa-solid fa-map-location-dot"></i> Setting <span class="required">*</span></label>
+                    <input type="text" id="setting" name="setting" placeholder="e.g., Mars Colony, 2120" required>
+                </div>
+                <div class="input-group">
+                    <label for="characters"><i class="fa-solid fa-users"></i> Main characters <span class="required">*</span></label>
+                    <input type="text" id="characters" name="characters" placeholder="e.g., A scientist and an AI rover" required>
                 </div>
                 <div class="input-group">
                     <label for="story-length"><i class="fa-solid fa-ruler-horizontal"></i> Target length (words)</label>
-                    <input type="number" id="story-length" name="story-length" placeholder="e.g., 800">
+                    <input type="number" id="story-length" name="story-length" placeholder="e.g., 800" min="100" max="5000">
                 </div>
             </div>
 
             <!-- Speech Fields -->
             <div id="speech-fields" class="hidden">
-                <div class="input-group">
-                    <label for="occasion"><i class="fa-solid fa-calendar-day"></i> Occasion</label>
-                    <input type="text" id="occasion" name="occasion" placeholder="e.g., Graduation Ceremony">
+                <div class="section-divider">
+                    <h3><i class="fa-solid fa-microphone"></i> Speech Details</h3>
                 </div>
                 <div class="input-group">
-                    <label for="audience"><i class="fa-solid fa-people-group"></i> Audience</label>
-                    <input type="text" id="audience" name="audience" placeholder="e.g., Graduates and families">
+                    <label for="occasion"><i class="fa-solid fa-calendar-day"></i> Occasion <span class="required">*</span></label>
+                    <input type="text" id="occasion" name="occasion" placeholder="e.g., Graduation Ceremony" required>
+                </div>
+                <div class="input-group">
+                    <label for="audience"><i class="fa-solid fa-people-group"></i> Audience <span class="required">*</span></label>
+                    <input type="text" id="audience" name="audience" placeholder="e.g., Graduates and families" required>
                 </div>
                 <div class="input-group">
                     <label for="speech-duration"><i class="fa-solid fa-clock"></i> Target duration (minutes)</label>
-                    <input type="number" id="speech-duration" name="speech-duration" placeholder="e.g., 5">
+                    <input type="number" id="speech-duration" name="speech-duration" placeholder="e.g., 5" min="1" max="60">
                 </div>
             </div>
 
@@ -114,10 +129,6 @@
                 <button id="copy-btn" title="Copy to clipboard">
                     <i class="fa-regular fa-copy"></i> Copy
                 </button>
-            </div>
-            <div id="loading-indicator" class="hidden">
-                <div class="spinner"></div>
-                <p>Generating... please wait.</p>
             </div>
             <pre id="result-text"></pre>
         </section>
