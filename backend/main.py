@@ -11,30 +11,9 @@ app = Flask(__name__)
 # Enable CORS to allow requests from your frontend
 CORS(app)
 
-PROVIDER = os.getenv("PROVIDER", "hf").lower()  # "hf" or "groq"
-
-HF_API_TOKEN = os.getenv("HF_API_TOKEN")
-HF_MODEL_ID = os.getenv("HF_MODEL_ID", "google/flan-t5-large")
-HEADERS = {"Authorization": f"Bearer {HF_API_TOKEN}"} if HF_API_TOKEN else {}
-
-# Comma-separated fallback models (will be tried if the selected model 404s)
-FALLBACK_MODELS_ENV = os.getenv(
-    "HF_FALLBACK_MODELS",
-    ",".join([
-        "google/flan-t5-large",
-        "google/flan-t5-xl",
-        "tiiuae/falcon-7b-instruct",
-        "mistralai/Mistral-7B-Instruct-v0.2",
-    ])
-)
-FALLBACK_MODELS = [m.strip() for m in FALLBACK_MODELS_ENV.split(",") if m.strip()]
-
-def _hf_model_url(model_id: str) -> str:
-    return f"https://api-inference.huggingface.co/models/{model_id}"
-
 # Groq configuration
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-GROQ_MODEL_ID = os.getenv("GROQ_MODEL_ID", "llama3-8b-8192")
+GROQ_MODEL_ID = os.getenv("GROQ_MODEL_ID", "llama-3.1-8b-instant")
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
@@ -62,109 +41,70 @@ def generate_email():
     tone = data.get('tone', '').strip()
     key_points = data.get('points', '').strip()
 
-    if not HF_API_TOKEN:
-        return jsonify({"error": "Missing HF_API_TOKEN. Set it in backend/.env"}), 500
+    # Validate Groq API key
+    if not GROQ_API_KEY:
+        return jsonify({"error": "Missing GROQ_API_KEY. Set it in backend/.env"}), 500
 
-    # 2. Engineer the prompt for the model
-    prompt = f"""
-    [INST]
-    You are an expert email copywriter. Your task is to generate a professional email.
-    Generate a subject line and an email body based on these requirements:
-    - **Goal:** {email_goal}
-    - **Recipient:** {recipient}
-    - **Tone:** {tone}
-    - **Key Points to Include:** {key_points}
+    # Create the prompt for Groq
+    prompt = f"""You are an expert email copywriter. Your task is to generate a professional email.
+Generate a subject line and an email body based on these requirements:
+- **Goal:** {email_goal}
+- **Recipient:** {recipient}
+- **Tone:** {tone}
+- **Key Points to Include:** {key_points}
 
-    **Output Format:**
-    Subject: [Your generated subject line]
-    ---
-    Body:
-    [Your generated email body]
-    [/INST]
-    """
+**Output Format:**
+Subject: [Your generated subject line]
+---
+Body:
+[Your generated email body]"""
 
-    # 3. Call the provider API
-    payload_hf = {
-        "inputs": prompt,
-        "parameters": {"max_new_tokens": 512, "temperature": 0.7, "return_full_text": False},
-        "options": {"wait_for_model": True}
-    }
-
-    def _extract_text(result_obj):
-        # Result can be list[{'generated_text': '...'}] or list[{'summary_text': '...'}]
-        if isinstance(result_obj, list) and result_obj:
-            first = result_obj[0]
-            if isinstance(first, dict):
-                if 'generated_text' in first:
-                    return first.get('generated_text', '')
-                if 'summary_text' in first:
-                    return first.get('summary_text', '')
-        # Some endpoints may return dict with 'generated_text'
-        if isinstance(result_obj, dict) and 'generated_text' in result_obj:
-            return result_obj.get('generated_text', '')
-        return ''
-
-    def try_infer_hf(model_id: str):
-        try:
-            response = requests.post(_hf_model_url(model_id), headers=HEADERS, json=payload_hf, timeout=120)
-            response.raise_for_status()
-            result = response.json()
-            if isinstance(result, dict) and result.get("error"):
-                return None, result.get("error")
-            generated_text = _extract_text(result)
-            if not generated_text:
-                return None, "Empty response from model"
-            return generated_text, None
-        except requests.exceptions.HTTPError as http_err:
-            status_code = getattr(http_err.response, 'status_code', 500)
-            if status_code == 404:
-                return None, f"Model not found (404) for {model_id}"
-            return None, f"HTTP error from HF for {model_id}: {http_err}"
-        except requests.exceptions.RequestException as e:
-            return None, f"Request error for {model_id}: {e}"
-
-    if PROVIDER == 'groq':
-        if not GROQ_API_KEY:
-            return jsonify({"error": "Missing GROQ_API_KEY. Set it in backend/.env"}), 500
-        try:
-            groq_headers = {
-                "Authorization": f"Bearer {GROQ_API_KEY}",
-                "Content-Type": "application/json",
-            }
-            groq_payload = {
-                "model": GROQ_MODEL_ID,
-                "messages": [
-                    {"role": "system", "content": "You are an expert email copywriter."},
-                    {"role": "user", "content": prompt},
-                ],
-                "temperature": 0.7,
-                "max_tokens": 512,
-            }
-            resp = requests.post(GROQ_URL, headers=groq_headers, json=groq_payload, timeout=120)
-            resp.raise_for_status()
-            data = resp.json()
-            content = data.get('choices', [{}])[0].get('message', {}).get('content', '')
-            if not content:
-                return jsonify({"error": "Empty response from Groq"}), 502
-            return jsonify({"generated_email": content, "model_used": GROQ_MODEL_ID, "provider": "groq"})
-        except requests.exceptions.RequestException as e:
-            return jsonify({"error": f"Groq request failed: {e}"}), 502
-
-    # Default: Hugging Face flow with fallbacks
-    tried = [HF_MODEL_ID] + [m for m in FALLBACK_MODELS if m != HF_MODEL_ID]
-    errors = []
-    for model_id in tried:
-        text, err = try_infer_hf(model_id)
-        if text:
-            return jsonify({"generated_email": text, "model_used": model_id, "provider": "hf"})
-        errors.append(err)
-
-    return jsonify({
-        "error": "All models failed",
-        "details": errors,
-        "tried_models": tried,
-        "hint": "Set HF_MODEL_ID or switch PROVIDER=groq in backend/.env",
-    }), 502
+    # Call Groq API
+    try:
+        groq_headers = {
+            "Authorization": f"Bearer {GROQ_API_KEY}",
+            "Content-Type": "application/json",
+        }
+        groq_payload = {
+            "model": GROQ_MODEL_ID,
+            "messages": [
+                {"role": "system", "content": "You are an expert email copywriter."},
+                {"role": "user", "content": prompt},
+            ],
+            "temperature": 0.7,
+            "max_tokens": 512,
+        }
+        resp = requests.post(GROQ_URL, headers=groq_headers, json=groq_payload, timeout=120)
+        
+        # Better error handling - capture actual Groq error message
+        if not resp.ok:
+            error_detail = "Unknown error"
+            try:
+                error_data = resp.json()
+                # Groq error format: {"error": {"message": "...", "type": "...", ...}}
+                if isinstance(error_data.get('error'), dict):
+                    error_detail = error_data['error'].get('message', str(error_data))
+                else:
+                    error_detail = str(error_data)
+                print(f"[ERROR] Groq API Error ({resp.status_code}): {error_data}")
+            except:
+                error_detail = resp.text
+                print(f"[ERROR] Groq API Error ({resp.status_code}): {resp.text}")
+            
+            return jsonify({
+                "error": f"Groq API error ({resp.status_code})",
+                "details": error_detail,
+                "model_used": GROQ_MODEL_ID,
+                "hint": "Check your GROQ_API_KEY and GROQ_MODEL_ID. Valid models: llama-3.1-8b-instant, llama-3.1-70b-versatile, mixtral-8x7b-32768, gemma-2-9b-it"
+            }), resp.status_code
+        
+        data = resp.json()
+        content = data.get('choices', [{}])[0].get('message', {}).get('content', '')
+        if not content:
+            return jsonify({"error": "Empty response from Groq"}), 502
+        return jsonify({"generated_email": content, "model_used": GROQ_MODEL_ID, "provider": "groq"})
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": f"Groq request failed: {e}"}), 502
 
 
 if __name__ == '__main__':
